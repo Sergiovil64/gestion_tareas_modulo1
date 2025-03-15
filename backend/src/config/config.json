@@ -1,0 +1,16 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "pass1234",
+    "database": "gestorTareas",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "root",
+    "password": "pass1234",
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
