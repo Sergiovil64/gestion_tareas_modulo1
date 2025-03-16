@@ -15,10 +15,12 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
-      state: {
-        type: Sequelize.STRING
+      status: {
+        type: Sequelize.ENUM("PENDIENTE", "COMPLETADA", "EN PROGRESO"),
+        defaultValue: 'PENDIENTE',
+        allowNull: false
       },
-      limit_date: {
+      dueDate: {
         type: Sequelize.DATE
       },
       createdAt: {

@@ -6,8 +6,8 @@ class Task extends Model {
   public id!: number; 
   public title!: string;
   public description!: string;
-  public state!: string;
-  public limit_date!: Date;
+  public status!: string;
+  public dueDate!: Date;
 }
 
 Task.init({
@@ -24,12 +24,12 @@ Task.init({
     type: DataTypes.STRING,
     allowNull: true
   },
-  state: {
-    type: DataTypes.STRING,
-    values: ['PENDIENTE', 'EN PROGRESO', 'COMPLETADA'],
-    defaultValue: 'PENDIENTE'
+  status: {
+    type: DataTypes.ENUM("PENDIENTE", "COMPLETADA", "EN PROGRESO"),
+    defaultValue: 'PENDIENTE',
+    allowNull: false
   },
-  limit_date: {
+  dueDate: {
     type: DataTypes.DATE,
     allowNull: false
   }
