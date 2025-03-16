@@ -3,7 +3,7 @@ import { createTask, getTasks } from "../controllers/tasks.controller";
 
 const taskRouter = express.Router(); 
 
-taskRouter.get('/tasks', getTasks); 
-taskRouter.post('/tasks', createTask);
+taskRouter.get('/', getTasks); 
+taskRouter.post('/', createTask);
 
 export default taskRouter; 
