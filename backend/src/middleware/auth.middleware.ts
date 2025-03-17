@@ -14,7 +14,7 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: number };
+    const decoded = jwt.verify(token, process.env.SECRET_KEY as string || 'secret_key') as { id: number };
     req.id = decoded.id;
     next();
   } catch (error) {

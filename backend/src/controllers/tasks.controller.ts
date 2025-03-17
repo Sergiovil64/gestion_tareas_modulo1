@@ -107,5 +107,5 @@ export const deleteTask = async (req: Request, res: Response) => {
     }
     // Eliminando tarea
     await task.destroy();
-    res.json(task);
+    res.json("Tarea Eliminada con éxito.");
 };
