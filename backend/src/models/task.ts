@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import {sequelize} from "./index";
+import User from "./user";
 
 
 class Task extends Model {
@@ -32,10 +33,23 @@ Task.init({
   dueDate: {
     type: DataTypes.DATE,
     allowNull: false
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: "Users",
+      key: "id",
+    },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   }
 }, {
   sequelize,
   modelName: 'Task',
 });
+
+Task.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(Task, { foreignKey: "userId" });
 
 export default Task;

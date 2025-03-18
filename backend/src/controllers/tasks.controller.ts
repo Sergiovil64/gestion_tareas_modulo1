@@ -2,13 +2,14 @@ import { Request, Response } from "express";
 import Task from "../models/task";
 import { validationResult } from "express-validator";
 import { Op } from "sequelize";
+import { AuthRequest } from "../middleware/auth.middleware";
 
 // GET TASKS
-export const getTasks = async (req: Request, res: Response) => {
+export const getTasks = async (req: AuthRequest, res: Response) => {
     const { status, search, startDate, endDate } = req.query;
-
+    console.log(req.id);
     // Construye la condicion
-    const where: any = {};
+    const where: any = { userId: req.id };
 
     // Filtro por estado (status)
     if (status) {
@@ -42,7 +43,7 @@ export const getTasks = async (req: Request, res: Response) => {
 }; 
 
 // POST TASK
-export const createTask = async (req: Request, res: Response) => { 
+export const createTask = async (req: AuthRequest, res: Response) => { 
     // Validamos los datos recibidos
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -51,12 +52,12 @@ export const createTask = async (req: Request, res: Response) => {
     }
 
     // Creando tarea siempre con status PENDIENTE
-    const tarea = await Task.create({...req.body, status: 'PENDIENTE'}); 
+    const tarea = await Task.create({...req.body, status: 'PENDIENTE', userId: req.id }); 
     res.status(201).json(tarea); 
 };
 
 // GET TASK BY ID
-export const getTask = async (req: Request, res: Response) => { 
+export const getTask = async (req: AuthRequest, res: Response) => { 
     const {id} = req.params;
     // Buscando Task por Id
     const task = await Task.findByPk(id);
@@ -64,7 +65,7 @@ export const getTask = async (req: Request, res: Response) => {
 };
 
 // PUT TASK
-export const updateTask = async (req: Request, res: Response) => { 
+export const updateTask = async (req: AuthRequest, res: Response) => { 
     const {id} = req.params;
     const {status} = req.body;
 
@@ -97,7 +98,7 @@ export const updateTask = async (req: Request, res: Response) => {
     res.json(task);
 };
 
-export const deleteTask = async (req: Request, res: Response) => { 
+export const deleteTask = async (req: AuthRequest, res: Response) => { 
     const {id} = req.params;
 
     const task = await Task.findByPk(id);
