@@ -7,7 +7,6 @@ import { AuthRequest } from "../middleware/auth.middleware";
 // GET TASKS
 export const getTasks = async (req: AuthRequest, res: Response) => {
     const { status, search, startDate, endDate } = req.query;
-    console.log(req.id);
     // Construye la condicion
     const where: any = { userId: req.id };
 

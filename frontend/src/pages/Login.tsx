@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { login } from "../api/auth";
 
-const API_URL = "http://localhost:3000/api/auth";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const setToken = useAuthStore((state) => state.setToken);
+  const { token, setToken } = useAuthStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      navigate("/tasks");
+    }
+  }, [token, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,11 +24,6 @@ const Login = () => {
     } catch (error) {
       alert("Ha ocurrido un error al loguearse. Por favor intente nuevamente");
     }
-  };
-
-  const login = async (email: string, password: string) => {
-    const response = await axios.post(`${API_URL}/login`, { email, password });
-    return response.data;
   };
 
   return (
