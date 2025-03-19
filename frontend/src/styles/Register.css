@@ -1,0 +1,49 @@
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #8B5E3C, #5D4037); /* Gradiente café */
+  }
+  
+  .register-box {
+    background: #FAE5D3;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: center;
+  }
+  
+  .register-box h2 {
+    color: #5D4037;
+    font-size: 24px;
+    margin-bottom: 1rem;
+  }
+  
+  .register-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #8B5E3C;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .register-box button {
+    width: 100%;
+    padding: 12px;
+    background: #8B5E3C;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .register-box button:hover {
+    background: #6D4C41;
+  }
+
+  

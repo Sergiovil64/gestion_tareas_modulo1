@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/authStore";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
+import '../styles/Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -27,13 +28,18 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>Iniciar Sesión</h2>
-      <form onSubmit={handleLogin}>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" required />
-        <button type="submit">Entrar</button>
-      </form>
+    <div className="login-container">
+      <div className="login-box">
+        <h2>Iniciar Sesión</h2> 
+        <form onSubmit={handleLogin}>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" required />
+          <button type="submit">Entrar</button>
+        </form>
+        <div className="register-link">
+          ¿Aún sin cuenta? <Link to="/register">Regístrate aquí</Link>
+        </div>
+      </div>
     </div>
   );
 };
