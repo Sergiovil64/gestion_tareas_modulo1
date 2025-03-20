@@ -1,0 +1,124 @@
+.tasks-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(to bottom, #8B5E3C, #5D4037); /* Fondo café */
+    min-height: 100vh;
+}
+
+.logout-btn {
+    background: #5d3f28;
+    color: white;
+    align-self: end;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+.logout-btn:hover {
+    background: #6D4C41;
+}
+
+.tasklist-title,
+.filter-title {
+    color: #fae5d3 
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-direction: column;
+ }
+
+ .search-container {
+    display: flex;
+    width: 100%;
+    margin-bottom: 24px;
+ }
+ 
+.filters-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.filter-title {
+    margin: 6px 0;
+}
+
+.filters input,
+.filters select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #8B5E3C;
+    font-size: 16px;
+}
+
+.tasks-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    max-width: 1000px;
+}
+
+.task-card {
+    background: #FBE9E7;
+    width: 250px;
+    min-height: 180px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    font-family: Arial, sans-serif;
+    transition: transform 0.2s;
+}
+
+.task-card:hover {
+    transform: scale(1.05);
+}
+
+.task-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #5D4037;
+}
+
+.task-description {
+    font-size: 14px;
+    color: #6D4C41;
+    margin: 10px 0;
+}
+
+.task-status {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+.task-status.pendiente {
+    color: #D84315;
+}
+
+.task-status.en-progreso {
+    color: #FFA000;
+}
+
+.task-status.completada {
+    color: #2E7D32;
+}
+
+.task-due-date {
+    font-size: 13px;
+    color: #8D6E63;
+    font-style: italic;
+}
+

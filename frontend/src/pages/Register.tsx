@@ -28,10 +28,15 @@ const Register = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate("/login");
+  };
+
   return (
     <div className="register-container">
       <div className="register-box">
-        <h2>Registro</h2>
+        <button className="back-button" onClick={handleBack}>Volver</button>
+        <h2>Registro de usuarios</h2>
         <form onSubmit={handleRegister}>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre" required />
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />

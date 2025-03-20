@@ -30,6 +30,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-box">
+        <h1>Control de Tareas</h1> 
         <h2>Iniciar Sesión</h2> 
         <form onSubmit={handleLogin}>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
