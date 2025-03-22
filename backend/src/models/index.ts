@@ -19,6 +19,7 @@ const db: {[key: string]: any} = {};
 const envConfig = env === 'development' ? (config as DBConfig).development : (config as DBConfig).production;
 
 const sequelize = new Sequelize(envConfig.database || '', envConfig.username || '', envConfig.password, envConfig);
+const modelsDir = __dirname;
 
 fs
   .readdirSync(__dirname)
@@ -31,7 +32,9 @@ fs
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, DataTypes);
+    const modelPath = path.join(modelsDir, file);
+    const imported = require(modelPath);
+    const model = imported.default || imported;
     db[model.name] = model;
   });
 
