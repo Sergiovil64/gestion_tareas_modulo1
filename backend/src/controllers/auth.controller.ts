@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user";
+import { AuthRequest } from "../middleware/auth.middleware";
 
 // Registrar nuevo usuario
 export const registerUser = async (req: Request, res: Response) => {
@@ -44,41 +45,37 @@ export const login = async (req: Request, res: Response) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
         res.status(400).json({ message: "Contraseña incorrecta" });
+        return;
     }
 
     // Generamos un token JWT con los datos del usuario
     const token = generateToken({id: user.id});
 
     // Enviamos el token al cliente
+    res.cookie("token", token, { httpOnly: true, secure: !!process.env.IS_PROD, sameSite: "none" });
     res.json({ token });
 };
 
-export const me = async (req: Request, res: Response) => {
-    // Extraemos el token del header de autorización
-    const token = req.headers.authorization?.split(" ")[1];
-
-    // Si no hay token, se deniega el acceso
-    if (!token) {
-        res.status(401).json({ message: "Acceso denegado, token requerido" });
-        return;
-    }
-
+export const me = async (req: AuthRequest, res: Response) => {
     try {
-        // Verificamos y decodificamos el token
-        const decoded = jwt.verify(token, process.env.SECRET_KEY || 'secret_key') as { id: number };
-        // Buscamos el usuario en la base de datos por su ID
-        const user = await User.findOne({ where: { id: decoded.id } });
+        const user = await User.findOne({ where: { id: req.id } });
         if (!user) {
             res.status(404).json({ message: "Usuario no encontrado" });
             return;   
         }
 
         // Enviamos los datos del usuario autenticado
-        res.json({ id: user.id, name: user.name, email: user.email });
+        res.json({user});
     } catch (error) {
         // En caso de error, informamos que el token es inválido o ha expirado
         res.status(401).json({ message: "Token inválido o expirado" });
     }
+};
+
+export const logout = async (req: Request, res: Response) => {
+    res.clearCookie("token");
+    
+    res.json({ message: "Sesión cerrada" });
 };
 
 const generateToken = (userData: {id: number}) => {

@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useAuthStore } from "../store/authStore";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 import '../styles/Login.css';
@@ -7,21 +6,14 @@ import '../styles/Login.css';
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { token, setToken } = useAuthStore();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (token) {
-      navigate("/tasks");
-    }
-  }, [token, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const data = await login(email, password);
-      setToken(data.token);
-      console.log("Se ha logueado correctamente ", data.token);
+      await login(email, password);
+      navigate('/tasks');
+      console.log("Se ha logueado correctamente");
     } catch (error) {
       alert("Ha ocurrido un error al loguearse. Por favor intente nuevamente");
     }

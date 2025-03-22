@@ -1,28 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { register } from "../api/auth";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
 import '../styles/Register.css';
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const {token, setToken} = useAuthStore();
   const navigate = useNavigate();
-
-  useEffect(() => {
-      if (token) {
-        navigate("/tasks");
-      }
-  }, [token, navigate]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const result = await register(name, email, password);
-      setToken(result.token);
-      navigate("/tasks");
+      await register(name, email, password);
+      navigate("/login");
     } catch (error) {
       alert("Error en registro");
     }
