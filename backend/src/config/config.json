@@ -7,10 +7,10 @@
     "dialect": "postgres"
   },
   "production": {
-    "username": "root",
-    "password": "pass1234",
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "username": "taskuser",
+    "password": "8mIixBEJA1n3McpeDf31P9DxuYx3qwqT",
+    "database": "gestortareas",
+    "host": "dpg-cvf2to5ds78s73fgb9t0-a.oregon-postgres.render.com",
     "dialect": "postgres"
   }
 }

@@ -52,7 +52,7 @@ export const login = async (req: Request, res: Response) => {
     const token = generateToken({id: user.id});
 
     // Enviamos el token al cliente
-    res.cookie("token", token, { httpOnly: true, secure: !!process.env.IS_PROD, sameSite: "none" });
+    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: "none" });
     res.json({ token });
 };
 
