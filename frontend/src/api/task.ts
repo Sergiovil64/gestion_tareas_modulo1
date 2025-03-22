@@ -5,29 +5,22 @@ const API_URL = "https://gestion-tareas-modulo1.onrender.com/api/tasks";
 
 export const getTasks = async (params: URLSearchParams) => {
   const response = await axios.get(API_URL, {
-    params,
-    withCredentials: true
+    params
   });
   return response.data;
 };
 
 export const createTask = async (task: Task) => {
-  const response = await axios.post(API_URL, task, {
-    withCredentials: true
-  });
+  const response = await axios.post(API_URL, task);
   return response.data;
 };
 
 export const updateTask = async (task: Task) => {
-  const response = await axios.put(`${API_URL}/${task.id}`, task, {
-    withCredentials: true
-  });
+  const response = await axios.put(`${API_URL}/${task.id}`, task);
   return response.data;
 };
 
 export const deleteTask = async (task: Task) => {
-  const response = await axios.delete(`${API_URL}/${task.id}`, {
-    withCredentials: true
-  });
+  const response = await axios.delete(`${API_URL}/${task.id}`);
   return response.data;
 };
