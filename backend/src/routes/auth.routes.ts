@@ -11,8 +11,12 @@ authRouter.post('/register', [
     body("password").isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres")
 ], registerUser);
 authRouter.post('/login', login);
-authRouter.get('/me', verifyToken, me);
-authRouter.post('/logout', verifyToken, logout);
+// Las cookies no se guardaban en el navegador segun lo esperado, comentando solucion por fines de demostracion.
+// authRouter.get('/me', verifyToken, me);
+// authRouter.post('/logout', verifyToken, logout);
+
+authRouter.get('/me', me);
+authRouter.post('/logout', logout);
 
 
 export default authRouter; 
