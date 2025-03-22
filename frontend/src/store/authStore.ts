@@ -1,26 +1,23 @@
-import { useEffect, useState } from "react";
-import { currentUser } from "../api/auth";
+import { create } from "zustand";
 
-const useSession = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+interface AuthState {
+  token: string | null;
+  setToken: (token: string | null) => void;
+  logout: () => void;
+}
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const data = await currentUser();
-        setUser(data);
-      } catch (error) {
-        setUser(null); // No autenticado
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  return { user, loading };
-};
-
-export default useSession;
+export const useAuthStore = create<AuthState>((set) => ({
+  token: localStorage.getItem("token"),
+  setToken: (token) => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+    set({ token });
+  },
+  logout: () => {
+    localStorage.removeItem("token");
+    set({ token: null });
+  }
+}));

@@ -52,7 +52,6 @@ export const login = async (req: Request, res: Response) => {
     const token = generateToken({id: user.id});
 
     // Enviamos el token al cliente
-    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: "none" });
     res.json({ token });
 };
 
@@ -70,12 +69,6 @@ export const me = async (req: AuthRequest, res: Response) => {
         // En caso de error, informamos que el token es inválido o ha expirado
         res.status(401).json({ message: "Token inválido o expirado" });
     }
-};
-
-export const logout = async (req: Request, res: Response) => {
-    res.clearCookie("token");
-    
-    res.json({ message: "Sesión cerrada" });
 };
 
 const generateToken = (userData: {id: number}) => {

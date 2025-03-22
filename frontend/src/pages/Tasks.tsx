@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createTask, deleteTask, getTasks, updateTask } from "../api/task";
+import { useAuthStore } from "../store/authStore";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { Task } from "./Task.interface";
 
 import "../styles/Tasks.css";
-import { logout } from "../api/auth";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -13,12 +13,18 @@ const Tasks = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const { token, setToken, logout } = useAuthStore();
   const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
 
   useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     const fetchTasks = async () => {
       try {
         const params = new URLSearchParams();
@@ -27,10 +33,11 @@ const Tasks = () => {
         if (startDate) params.append("startDate", startDate);
         if (endDate) params.append("endDate", endDate);
 
-        const data = await getTasks(params);
+        const data = await getTasks(token, params);
         setTasks(data);
       } catch (error: any) {
         if (error.status === 401) {
+          setToken(null); 
           navigate("/login");
         }
         console.error("Error al obtener lista de tareas", error);
@@ -38,7 +45,7 @@ const Tasks = () => {
     };
 
     fetchTasks();
-  }, [search, statusFilter, startDate, endDate, navigate]);
+  }, [token, search, statusFilter, startDate, endDate, navigate, setToken]);
 
   const openEditModal = (task: Task) => {
     const formattedDate = task.dueDate ? task.dueDate.split("T")[0] : "";
@@ -47,19 +54,21 @@ const Tasks = () => {
   };
 
   const handleSaveTask = async () => {
-    if (currentTask) {
+    if (currentTask && token) {
       try {
         if (currentTask.id) {
-          await updateTask(currentTask);
+          await updateTask(token, currentTask);
         } else {
-          await createTask(currentTask);
+          console.log(token);
+          await createTask(token, currentTask);
         }
         closeEditModal();
         // Vuelve a cargar las tareas
-        const data = await getTasks(new URLSearchParams());
+        const data = await getTasks(token ?? '', new URLSearchParams());
         setTasks(data);
       } catch (error: any) {
         if (error.status === 401) {
+          setToken(null); 
           navigate("/login");
         }
         console.error("Error al guardar tarea:", error);
@@ -69,12 +78,12 @@ const Tasks = () => {
 
   const handleDeleteTask = async (task: Task) => {
     const confirm = window.confirm("¿Estás seguro de que deseas eliminar esta tarea?");
-    if (!confirm || !task) return;
+    if (!confirm || !token || !task) return;
   
     try {
-      await deleteTask(task);
+      await deleteTask(token, task);
       // Refrescar lista
-      const data = await getTasks(new URLSearchParams());
+      const data = await getTasks(token, new URLSearchParams());
       setTasks(data);
     } catch (error) {
       console.error("Error al eliminar tarea:", error);

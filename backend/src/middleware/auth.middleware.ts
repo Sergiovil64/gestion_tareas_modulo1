@@ -6,7 +6,7 @@ export interface AuthRequest extends Request {
 }
 
 export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.cookies.token;
+  const token = req.header("Authorization")?.split(" ")[1];
 
   if (!token) {
     res.status(401).json({ error: "Token no encontrado" });

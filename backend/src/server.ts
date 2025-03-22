@@ -3,20 +3,17 @@ import taskRoutes from "./routes/tasks.routes";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
 const app = express();
-app.use(cookieParser());
 
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
     origin: process.env.FRONTEND_URL, 
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true    
+    allowedHeaders: ["Content-Type", "Authorization"]
 };
 
 app.use(cors(corsOptions));
