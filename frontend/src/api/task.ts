@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Task } from "../pages/Task.interface";
 
-const API_URL = "http://localhost:3000/api/tasks";
+const API_URL = "https://gestion-tareas-modulo1.onrender.com/api/tasks";
 
 export const getTasks = async (params: URLSearchParams) => {
   const response = await axios.get(API_URL, {

@@ -11,6 +11,12 @@
     "password": "8mIixBEJA1n3McpeDf31P9DxuYx3qwqT",
     "database": "gestortareas",
     "host": "dpg-cvf2to5ds78s73fgb9t0-a.oregon-postgres.render.com",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+      "require": true,
+      "rejectUnauthorized": false
+      } 
+    }
   }
 }
