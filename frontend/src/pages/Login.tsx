@@ -16,14 +16,18 @@ const Login = () => {
     }
   }, [token, navigate]);
 
+  const { setUser } = useAuthStore();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const data = await login(email, password);
       setToken(data.token);
+      setUser(data.user);
       console.log("Se ha logueado correctamente ", data.token);
-    } catch (error) {
-      alert("Ha ocurrido un error al loguearse. Por favor intente nuevamente");
+    } catch (error: any) {
+      const message = error.response?.data?.message || "Ha ocurrido un error al loguearse";
+      alert(message);
     }
   };
 

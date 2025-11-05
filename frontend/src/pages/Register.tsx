@@ -8,7 +8,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const {token, setToken} = useAuthStore();
+  const {token, setToken, setUser} = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,9 +22,11 @@ const Register = () => {
     try {
       const result = await register(name, email, password);
       setToken(result.token);
+      setUser(result.user);
       navigate("/tasks");
-    } catch (error) {
-      alert("Error en registro");
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.response?.data?.errors?.[0]?.message || "Error en registro. La contraseña debe tener al menos 12 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales.";
+      alert(message);
     }
   };
 

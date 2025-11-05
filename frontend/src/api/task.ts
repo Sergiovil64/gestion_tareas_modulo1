@@ -8,7 +8,14 @@ export const getTasks = async (token: string, params: URLSearchParams) => {
     params,
     headers: {Authorization: `Bearer ${token}`}
   });
-  return response.data;
+  return response.data.tasks || response.data;
+};
+
+export const getTask = async (token: string, id: number) => {
+  const response = await axios.get(`${API_URL}/${id}`, {
+    headers: {Authorization: `Bearer ${token}`}
+  });
+  return response.data.task;
 };
 
 export const createTask = async (token: string, task: Task) => {

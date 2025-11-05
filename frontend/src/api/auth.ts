@@ -18,3 +18,10 @@ export const currentUser = async (token: string) => {
   );
   return response.data.user;
 };
+
+export const upgradeToPremium = async (token: string) => {
+  const response = await axios.post(`${API_URL}/upgrade-to-premium`, {}, {
+    headers: {Authorization: `Bearer ${token}`}
+  });
+  return response.data;
+};
