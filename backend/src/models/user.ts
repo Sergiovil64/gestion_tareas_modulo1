@@ -1,11 +1,22 @@
 import { DataTypes, Model } from "sequelize";
 import {sequelize} from "./index";
 
+// Control de Acceso: Definición de roles de usuario
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  PREMIUM = 'PREMIUM',
+  FREE = 'FREE'
+}
+
 class User extends Model {
-  public id!: number; 
+  public id!: number;
   public name!: string;
   public email!: string;
   public password!: string;
+  public role!: UserRole;
+  public isActive!: boolean;
+  public loginAttempts!: number;
+  public lastLoginAttempt!: Date;
 }
 
 User.init({
@@ -16,20 +27,63 @@ User.init({
   },
   name: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      // Control de entrada: Validación de entradas en DB
+      notEmpty: { msg: 'El nombre no puede estar vacío' },
+      len: { args: [2, 100], msg: 'El nombre debe tener entre 2 y 100 caracteres' }
+    }
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: true,
+    validate: {
+      // Control de entrada: Validación de entradas en DB
+      isEmail: { msg: 'Debe proporcionar un email válido' }
+    }
   },
   password: {
     type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      // Control de entrada: Validación de entradas en DB
+      len: { args: [6, 255], msg: 'La contraseña debe tener al menos 6 caracteres' }
+    }
+  },
+  role: {
+    type: DataTypes.ENUM(...Object.values(UserRole)),
+    defaultValue: UserRole.FREE,
+    allowNull: false,
+    validate: {
+      // Control de entrada: Validación de entradas en DB
+      isIn: {
+        args: [Object.values(UserRole)],
+        msg: 'Rol de usuario inválido'
+      }
+    }
+  },
+  // Gestión de sesiones: Control de estado de la cuenta
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
     allowNull: false
+  },
+  // Gestión de sesiones: Control de intentos de login
+  loginAttempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false
+  },
+  // Gestión de sesiones: Control de último intento de login
+  lastLoginAttempt: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   sequelize,
   modelName: 'User',
+  tableName: 'Users'
 });
 
 export default User;

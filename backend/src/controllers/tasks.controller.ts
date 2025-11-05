@@ -1,111 +1,264 @@
-import { Request, Response } from "express";
-import Task from "../models/task";
-import { validationResult } from "express-validator";
+import { Response } from "express";
+import Task, { TaskStatus } from "../models/task";
 import { Op } from "sequelize";
 import { AuthRequest } from "../middleware/auth.middleware";
+import { handleValidationErrors } from "../validators/validators";
 
-// GET TASKS
-export const getTasks = async (req: AuthRequest, res: Response) => {
-    const { status, search, startDate, endDate } = req.query;
-    // Construye la condicion
-    const where: any = { userId: req.id };
+// Get All Tasks (with filters)
+export const getTasks = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { status, search, startDate, endDate, priority } = req.query;
+    
+    // Base condition - user can only see their own tasks
+    const where: any = { userId: req.userId };
 
-    // Filtro por estado (status)
-    if (status) {
-        where.status = status;
+    // Filter by status
+    if (status && Object.values(TaskStatus).includes(status as TaskStatus)) {
+      where.status = status;
     }
 
-    // Búsqueda por título o descripción
-    if (search) {
-        where[Op.or] = [
+    // Search by title or description
+    if (search && typeof search === 'string') {
+      where[Op.or] = [
         { title: { [Op.iLike]: `%${search}%` } },
-        { description: { [Op.iLike]: `%${search}%` } },
+        { description: { [Op.iLike]: `%${search}%` } }
       ];
     }
 
-    // Filtrado por rango de fechas
+    // Filter by date range
     if (startDate || endDate) {
-        where.createdAt = {};
-        
-        // createdAt debe ser mayor al startDate
-        if (startDate) {
-            where.createdAt[Op.gte] = new Date(startDate as string);
-        }
-        // createdAt debe ser menor al endDate
-        if (endDate) {
-            where.createdAt[Op.lte] = new Date(endDate as string); // Fecha de fin
-        }
+      where.dueDate = {};
+      if (startDate) {
+        where.dueDate[Op.gte] = new Date(startDate as string);
       }
-
-    const tareas = await Task.findAll({ where });
-    res.json(tareas); 
-}; 
-
-// POST TASK
-export const createTask = async (req: AuthRequest, res: Response) => { 
-    // Validamos los datos recibidos
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        res.status(400).json({ errors: errors.array() });
-        return;
+      if (endDate) {
+        where.dueDate[Op.lte] = new Date(endDate as string);
+      }
     }
 
-    // Creando tarea siempre con status PENDIENTE
-    const tarea = await Task.create({...req.body, status: 'PENDIENTE', userId: req.id }); 
-    res.status(201).json(tarea); 
+    // Filter by priority
+    if (priority) {
+      const priorityNum = parseInt(priority as string);
+      if (!isNaN(priorityNum) && priorityNum >= 1 && priorityNum <= 5) {
+        where.priority = priorityNum;
+      }
+    }
+
+    const tasks = await Task.findAll({ 
+      where,
+      order: [
+        ['priority', 'DESC'],
+        ['dueDate', 'ASC']
+      ]
+    });
+
+    res.json({
+      count: tasks.length,
+      tasks
+    });
+  } catch (error: any) {
+    console.error("Error al obtener tareas:", error);
+    res.status(500).json({ 
+      error: "Error al obtener tareas",
+      message: "Ha ocurrido un error interno. Por favor, intente más tarde."
+    });
+  }
 };
 
-// GET TASK BY ID
-export const getTask = async (req: AuthRequest, res: Response) => { 
-    const {id} = req.params;
-    // Buscando Task por Id
-    const task = await Task.findByPk(id);
-    task ? res.json(task) : res.status(404).json({ error: "Tarea no encontrada" });
-};
+// Get Single Task
+export const getTask = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
 
-// PUT TASK
-export const updateTask = async (req: AuthRequest, res: Response) => { 
-    const {id} = req.params;
-    const {status} = req.body;
+    // Validate ID
+    if (!id || isNaN(parseInt(id))) {
+      res.status(400).json({ 
+        error: "ID inválido",
+        message: "El ID de la tarea debe ser un número válido" 
+      });
+      return;
+    }
 
-    const task = await Task.findByPk(id);
+    const task = await Task.findOne({
+      where: { 
+        id: parseInt(id),
+        userId: req.userId // Ensure user can only access their own tasks
+      }
+    });
+
     if (!task) {
-        res.status(404).json({ error: "Tarea no encontrada" });
-        return;
+      res.status(404).json({ 
+        error: "Tarea no encontrada",
+        message: "La tarea no existe o no tiene permisos para acceder a ella" 
+      });
+      return;
     }
 
-    // Tarea COMPLETADA no puede ser modificada
-    if (task.status === 'COMPLETADA') {
-        res.status(400).json({ error: "Tarea completada no puede ser modificada" });
-        return;
-    }
-
-    // Tarea EN PROGRESO, COMPLETADA no puede volver a PENDIENTE
-    if (status && status === 'PENDIENTE' && task.status !== 'PENDIENTE') {
-        res.status(400).json({ error: "Tarea no puede volver a PENDIENTE" });
-        return;
-    }
-
-    // Solo es posible ir a EN PROGRESO desde PENDIENTE
-    if (status && status === "EN PROGRESO" && task.status !== "PENDIENTE") {
-        res.status(400).json({ error: "Tarea no puede volver ir a EN PROGRESO al no estar PENDIENTE" });
-        return;
-    }
-
-    // Actualizando tarea
-    await task.update(req.body);
-    res.json(task);
+    res.json({ task });
+  } catch (error: any) {
+    console.error("Error al obtener tarea:", error);
+    res.status(500).json({ 
+      error: "Error al obtener tarea",
+      message: "Ha ocurrido un error interno. Por favor, intente más tarde."
+    });
+  }
 };
 
-export const deleteTask = async (req: AuthRequest, res: Response) => { 
-    const {id} = req.params;
+// Create Task
+export const createTask = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    if (handleValidationErrors(req, res)) return;
 
-    const task = await Task.findByPk(id);
-    if (!task) {
-        res.status(404).json({ error: "Tarea no encontrada" });
-        return;
+    const { title, description, dueDate, priority, color, imageUrl } = req.body;
+
+    // Create task
+    const task = await Task.create({
+      title,
+      description: description || '',
+      status: TaskStatus.PENDIENTE,
+      dueDate,
+      userId: req.userId,
+      priority: priority || 1,
+      color: color || '#FFFFFF',
+      imageUrl: imageUrl || null
+    });
+
+    res.status(201).json({
+      message: "Tarea creada exitosamente",
+      task
+    });
+  } catch (error: any) {
+    console.error("Error al crear tarea:", error);
+    res.status(500).json({ 
+      error: "Error al crear tarea",
+      message: "Ha ocurrido un error interno. Por favor, intente más tarde."
+    });
+  }
+};
+
+// Update Task
+export const updateTask = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    if (handleValidationErrors(req, res)) return;
+
+    const { id } = req.params;
+    const { status, title, description, dueDate, priority, color, imageUrl } = req.body;
+
+    // Validate ID
+    if (!id || isNaN(parseInt(id))) {
+      res.status(400).json({ 
+        error: "ID inválido",
+        message: "El ID de la tarea debe ser un número válido" 
+      });
+      return;
     }
-    // Eliminando tarea
+
+    const task = await Task.findOne({
+      where: { 
+        id: parseInt(id),
+        userId: req.userId // Ensure user can only update their own tasks
+      }
+    });
+
+    if (!task) {
+      res.status(404).json({ 
+        error: "Tarea no encontrada",
+        message: "La tarea no existe o no tiene permisos para modificarla" 
+      });
+      return;
+    }
+
+    // Business rule: Completed tasks cannot be modified
+    if (task.status === TaskStatus.COMPLETADA) {
+      res.status(400).json({ 
+        error: "Tarea completada",
+        message: "Las tareas completadas no pueden ser modificadas" 
+      });
+      return;
+    }
+
+    // Business rule: Cannot go back to PENDIENTE
+    if (status === TaskStatus.PENDIENTE && task.status !== TaskStatus.PENDIENTE) {
+      res.status(400).json({ 
+        error: "Transición de estado inválida",
+        message: "No se puede regresar una tarea al estado PENDIENTE" 
+      });
+      return;
+    }
+
+    // Business rule: Can only go to EN PROGRESO from PENDIENTE
+    if (status === TaskStatus.EN_PROGRESO && task.status !== TaskStatus.PENDIENTE) {
+      res.status(400).json({ 
+        error: "Transición de estado inválida",
+        message: "Solo se puede cambiar a EN PROGRESO desde PENDIENTE" 
+      });
+      return;
+    }
+
+    // Update task
+    const updateData: any = {};
+    if (title !== undefined) updateData.title = title;
+    if (description !== undefined) updateData.description = description;
+    if (status !== undefined) updateData.status = status;
+    if (dueDate !== undefined) updateData.dueDate = dueDate;
+    if (priority !== undefined) updateData.priority = priority;
+    if (color !== undefined) updateData.color = color;
+    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+
+    await task.update(updateData);
+
+    res.json({
+      message: "Tarea actualizada exitosamente",
+      task
+    });
+  } catch (error: any) {
+    console.error("Error al actualizar tarea:", error);
+    res.status(500).json({ 
+      error: "Error al actualizar tarea",
+      message: "Ha ocurrido un error interno. Por favor, intente más tarde."
+    });
+  }
+};
+
+// Delete Task
+export const deleteTask = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    // Validate ID
+    if (!id || isNaN(parseInt(id))) {
+      res.status(400).json({ 
+        error: "ID inválido",
+        message: "El ID de la tarea debe ser un número válido" 
+      });
+      return;
+    }
+
+    const task = await Task.findOne({
+      where: { 
+        id: parseInt(id),
+        userId: req.userId // Ensure user can only delete their own tasks
+      }
+    });
+
+    if (!task) {
+      res.status(404).json({ 
+        error: "Tarea no encontrada",
+        message: "La tarea no existe o no tiene permisos para eliminarla" 
+      });
+      return;
+    }
+
     await task.destroy();
-    res.json("Tarea Eliminada con éxito.");
+
+    res.json({
+      message: "Tarea eliminada exitosamente"
+    });
+  } catch (error: any) {
+    console.error("Error al eliminar tarea:", error);
+    res.status(500).json({ 
+      error: "Error al eliminar tarea",
+      message: "Ha ocurrido un error interno. Por favor, intente más tarde."
+    });
+  }
 };

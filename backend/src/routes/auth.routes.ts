@@ -1,16 +1,14 @@
 import express from "express";
-import { login, me, registerUser } from "../controllers/auth.controller";
-import { body } from "express-validator";
-import { verifyToken } from "../middleware/auth.middleware";
+import { login, me, registerUser, upgradeToPremium } from "../controllers/auth.controller";
+import { verifyToken, registerLimiter, loginLimiter } from "../middleware/auth.middleware";
+import { registerValidationRules, loginValidationRules } from "../validators/validators";
 
 const authRouter = express.Router(); 
 
-authRouter.post('/register', [
-    body("name").notEmpty().withMessage("El nombre es obligatorio"),
-    body("email").isEmail().withMessage("Debe ser un email válido"),
-    body("password").isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres")
-], registerUser);
-authRouter.post('/login', login);
+// Authentication Routes
+authRouter.post('/register', registerLimiter, registerValidationRules, registerUser);
+authRouter.post('/login', loginLimiter, loginValidationRules, login);
 authRouter.get('/me', verifyToken, me);
+authRouter.post('/upgrade-to-premium', verifyToken, upgradeToPremium);
 
-export default authRouter; 
+export default authRouter;
