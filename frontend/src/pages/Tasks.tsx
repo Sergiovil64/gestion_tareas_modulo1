@@ -135,6 +135,25 @@ const Tasks = () => {
     return labels[priority] || "";
   };
 
+  // Función para determinar si un color es oscuro o claro
+  const isColorDark = (hexColor: string): boolean => {
+    if (!hexColor) return false;
+    
+    const hex = hexColor.replace('#', '');
+    
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    return luminance < 0.5;
+  };
+
+  const getTextColor = (backgroundColor: string): string => {
+    return isColorDark(backgroundColor) ? '#FFFFFF' : '#5D4037';
+  };
+
   return (
     <div className="tasks-container">
       <div className="header-actions">
@@ -237,44 +256,59 @@ const Tasks = () => {
         {tasks.length === 0 ? (
           <p className="no-tasks">No hay tareas disponibles.</p>
         ) : (
-          tasks.map((task) => (
-            <div
-              className="task-card"
-              key={task.id}
-              style={{ backgroundColor: task.color || '#FBE9E7', borderLeft: `5px solid ${task.color || '#8B5E3C'}` }}
-            >
-              <div className="task-actions">
-                <FaEdit className="edit-icon" onClick={() => openEditModal(task)} />
-                <FaTrash className="delete-icon" onClick={() => handleDeleteTask(task)} />
-              </div>
-              {task.imageUrl && (
-                <div className="task-image">
-                  <img src={task.imageUrl} alt={task.title} />
+          tasks.map((task) => {
+            const backgroundColor = task.color || '#FBE9E7';
+            const textColor = getTextColor(backgroundColor);
+            const isDark = isColorDark(backgroundColor);
+            const iconBackgroundColor = isDark ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)';
+            
+            return (
+              <div
+                className="task-card"
+                key={task.id}
+                style={{ backgroundColor, borderLeft: `5px solid ${task.color || '#8B5E3C'}` }}
+              >
+                <div className="task-actions">
+                  <FaEdit 
+                    className="edit-icon" 
+                    onClick={() => openEditModal(task)}
+                    style={{ backgroundColor: iconBackgroundColor }}
+                  />
+                  <FaTrash 
+                    className="delete-icon" 
+                    onClick={() => handleDeleteTask(task)}
+                    style={{ backgroundColor: iconBackgroundColor }}
+                  />
                 </div>
-              )}
-              <div className="task-title">{task.title}</div>
-              <div className="task-description">{task.description}</div>
-              <div className="task-meta">
-                {task.priority && task.priority > 1 && (
-                  <div className={`task-priority priority-${task.priority}`}>
-                    ⭐ {getPriorityLabel(task.priority)}
+                {task.imageUrl && (
+                  <div className="task-image">
+                    <img src={task.imageUrl} alt={task.title} />
                   </div>
                 )}
-                <div className={`task-status ${task.status?.toLocaleLowerCase().replace(" ", "-")}`}>
-                  {task.status === "PENDIENTE"
-                    ? "Pendiente"
-                    : task.status === "EN PROGRESO"
-                    ? "En Progreso"
-                    : "Completada"}
+                <div className="task-title" style={{ color: textColor }}>{task.title}</div>
+                <div className="task-description" style={{ color: textColor }}>{task.description}</div>
+                <div className="task-meta">
+                  {task.priority && task.priority > 1 && (
+                    <div className={`task-priority priority-${task.priority}`}>
+                      ⭐ {getPriorityLabel(task.priority)}
+                    </div>
+                  )}
+                  <div className={`task-status ${task.status?.toLocaleLowerCase().replace(" ", "-")}`}>
+                    {task.status === "PENDIENTE"
+                      ? "Pendiente"
+                      : task.status === "EN PROGRESO"
+                      ? "En Progreso"
+                      : "Completada"}
+                  </div>
                 </div>
+                {task.dueDate && (
+                  <div className="task-due-date" style={{ color: textColor }}>
+                    Vence: {new Date(task.dueDate).toLocaleDateString()}
+                  </div>
+                )}
               </div>
-              {task.dueDate && (
-                <div className="task-due-date">
-                  Vence: {new Date(task.dueDate).toLocaleDateString()}
-                </div>
-              )}
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
