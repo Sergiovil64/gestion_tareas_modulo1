@@ -15,15 +15,6 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    if (!token || user?.role !== 'ADMIN') {
-      navigate("/tasks");
-      return;
-    }
-
-    fetchData();
-  }, [token, user, navigate]);
-
   const fetchData = async () => {
     if (!token) return;
 
@@ -42,6 +33,16 @@ const Admin = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!token || user?.role !== 'ADMIN') {
+      navigate("/tasks");
+      return;
+    }
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, user, navigate]);
 
   const handleRoleChange = async (userId: number, newRole: string) => {
     if (!token) return;

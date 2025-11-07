@@ -9,6 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [mfaToken, setMfaToken] = useState("");
   const [requiresMFA, setRequiresMFA] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [tempUserId, setTempUserId] = useState<number | null>(null);
   const { token, setToken } = useAuthStore();
   const navigate = useNavigate();

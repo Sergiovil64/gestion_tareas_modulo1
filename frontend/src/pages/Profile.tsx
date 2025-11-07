@@ -8,7 +8,7 @@ import MFASetup from "../components/MFASetup";
 import "../styles/Profile.css";
 
 const Profile = () => {
-  const { token, user, setUser, logout } = useAuthStore();
+  const { token, user, setUser } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
