@@ -88,7 +88,6 @@ export const updateUserRole = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// Toggle User Active Status (Admin only)
 export const toggleUserStatus = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { userId } = req.params;
@@ -109,7 +108,7 @@ export const toggleUserStatus = async (req: AuthRequest, res: Response): Promise
       return;
     }
 
-    // Prevent admin from deactivating themselves
+    // Previene que el admin se desactive a sí mismo
     if (user.id === req.userId) {
       res.status(400).json({ 
         error: "Acción no permitida",

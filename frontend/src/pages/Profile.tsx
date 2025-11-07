@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { upgradeToPremium, currentUser } from "../api/auth";
-import { FaCrown, FaUser, FaShieldAlt, FaArrowLeft } from "react-icons/fa";
+import { getMFAStatus } from "../api/mfa";
+import { FaCrown, FaUser, FaShieldAlt, FaArrowLeft, FaKey, FaLock } from "react-icons/fa";
+import MFASetup from "../components/MFASetup";
 import "../styles/Profile.css";
 
 const Profile = () => {
@@ -10,6 +12,8 @@ const Profile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showMFAModal, setShowMFAModal] = useState(false);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -27,7 +31,18 @@ const Profile = () => {
       }
     };
 
+    // Cargar estado de MFA
+    const fetchMFAStatus = async () => {
+      try {
+        const status = await getMFAStatus();
+        setMfaEnabled(status.mfaEnabled);
+      } catch (error) {
+        console.error("Error al obtener estado de MFA:", error);
+      }
+    };
+
     fetchUser();
+    fetchMFAStatus();
   }, [token, navigate, setUser]);
 
   const handleUpgrade = async () => {
@@ -98,11 +113,46 @@ const Profile = () => {
               {user?.isActive ? "Activa" : "Inactiva"}
             </span>
           </div>
+          <div className="info-row">
+            <span className="info-label">MFA:</span>
+            <span className={`info-value mfa-status ${mfaEnabled ? "enabled" : "disabled"}`}>
+              {mfaEnabled ? "🔐 Activado" : "🔓 Desactivado"}
+            </span>
+          </div>
         </div>
 
         {message && (
           <div className={`message ${message.includes("Error") ? "error" : "success"}`}>
             {message}
+          </div>
+        )}
+
+        <div className="security-section">
+          <h3>🔐 Seguridad</h3>
+          <div className="security-buttons">
+            <button 
+              className="security-btn"
+              onClick={() => navigate("/change-password")}
+            >
+              <FaKey /> Cambiar Contraseña
+            </button>
+            <button 
+              className="security-btn"
+              onClick={() => setShowMFAModal(true)}
+            >
+              <FaLock /> Configurar MFA
+            </button>
+          </div>
+        </div>
+
+        {showMFAModal && (
+          <div className="modal-overlay" onClick={() => setShowMFAModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <MFASetup onClose={() => {
+                setShowMFAModal(false);
+                getMFAStatus().then(status => setMfaEnabled(status.mfaEnabled)).catch(console.error);
+              }} />
+            </div>
           </div>
         )}
 

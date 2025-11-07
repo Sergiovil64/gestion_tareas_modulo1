@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Tasks from "./pages/Tasks";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
+import ChangePassword from "./pages/ChangePassword";
 import { useAuthStore } from "./store/authStore";
 
 // Protected Route Component
@@ -51,6 +52,14 @@ function App() {
           element={
             <ProtectedRoute adminOnly={true}>
               <Admin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/change-password"
+          element={
+            <ProtectedRoute>
+              <ChangePassword />
             </ProtectedRoute>
           }
         />

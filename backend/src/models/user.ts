@@ -17,6 +17,17 @@ class User extends Model {
   public isActive!: boolean;
   public loginAttempts!: number;
   public lastLoginAttempt!: Date;
+  
+  // MFA fields
+  public mfaEnabled!: boolean;
+  public mfaSecret!: string | null;
+  public mfaBackupCodes!: string | null;
+  
+  // Password management fields
+  public passwordChangedAt!: Date | null;
+  public passwordExpiresAt!: Date | null;
+  public mustChangePassword!: boolean;
+  public lastPasswordChangeRequired!: Date | null;
 }
 
 User.init({
@@ -77,6 +88,38 @@ User.init({
   },
   // Gestión de sesiones: Control de último intento de login
   lastLoginAttempt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  // MFA: Multi-Factor Authentication
+  mfaEnabled: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
+  },
+  mfaSecret: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  mfaBackupCodes: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  // Gestión de contraseñas: Expiración y cambio forzado
+  passwordChangedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  passwordExpiresAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  mustChangePassword: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
+  },
+  lastPasswordChangeRequired: {
     type: DataTypes.DATE,
     allowNull: true
   }

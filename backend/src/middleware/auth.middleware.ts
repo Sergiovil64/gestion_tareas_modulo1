@@ -164,7 +164,7 @@ export const requirePremiumFeature = async (
 // Limitador para todas las rutas (default)
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // Limitar cada IP a 100 solicitudes por windowMs
+  max: 2000,
   message: {
     error: "Demasiadas solicitudes",
     message: "Ha excedido el límite de solicitudes. Por favor, intente más tarde.",
@@ -172,6 +172,7 @@ export const generalLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: false,
 });
 
 // Limiter de inicio de sesión
@@ -179,7 +180,7 @@ export const generalLimiter = rateLimit({
 // Limitador para la ruta /api/auth/login
 export const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limitar cada IP a 5 solicitudes de inicio de sesión por windowMs
+  max: 10, // Limitar cada IP a 10 intentos fallidos de inicio de sesión por windowMs (aumentado para testing)
   message: {
     error: "Demasiados intentos de inicio de sesión",
     message: "Ha excedido el límite de intentos de inicio de sesión. Por favor, intente más tarde.",
@@ -195,7 +196,7 @@ export const loginLimiter = rateLimit({
 // Limitador para la ruta /api/auth/register
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hora
-  max: 3, // Limitar cada IP a 3 solicitudes de registro por hora
+  max: 10, // Limitar cada IP a 10 solicitudes de registro por hora (aumentado para testing)
   message: {
     error: "Demasiadas solicitudes de registro",
     message: "Ha excedido el límite de registros. Por favor, intente más tarde.",
@@ -210,7 +211,7 @@ export const registerLimiter = rateLimit({
 // Limitador para la ruta /api/tasks
 export const taskCreationLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minuto
-  max: 10, // Limitar cada IP a 10 solicitudes de creación de tareas por minuto
+  max: 30, // Limitar cada IP a 30 solicitudes de creación de tareas por minuto (aumentado para testing y uso normal)
   message: {
     error: "Demasiadas solicitudes de creación de tareas",
     message: "Ha excedido el límite de solicitudes de creación de tareas. Por favor, intente más tarde.",
