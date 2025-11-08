@@ -21,7 +21,7 @@ const calculatePasswordExpiration = (): Date => {
 };
 
 // Verificar si la contraseña ha sido usada recientemente
-const checkPasswordHistory = async (userId: number, newPassword: string): Promise<boolean> => {
+const checkPasswordHistory = async (userId: string, newPassword: string): Promise<boolean> => {
   try {
     // Obtener las últimas N contraseñas del historial
     const passwordHistories = await PasswordHistory.findAll({
@@ -46,7 +46,7 @@ const checkPasswordHistory = async (userId: number, newPassword: string): Promis
 };
 
 // Guardar contraseña en el historial
-const savePasswordHistory = async (userId: number, passwordHash: string): Promise<void> => {
+const savePasswordHistory = async (userId: string, passwordHash: string): Promise<void> => {
   try {
     await PasswordHistory.create({
       userId,
@@ -191,14 +191,14 @@ export const forcePasswordChange = async (req: AuthRequest, res: Response): Prom
   try {
     const { userId } = req.params;
 
-    if (!userId || isNaN(parseInt(userId))) {
+    if (!userId) {
       res.status(400).json({ 
         error: "ID de usuario inválido" 
       });
       return;
     }
 
-    const user = await User.findByPk(parseInt(userId));
+    const user = await User.findByPk(userId);
     
     if (!user) {
       res.status(404).json({ 
@@ -266,7 +266,7 @@ export const getPasswordStatus = async (req: AuthRequest, res: Response): Promis
 };
 
 // Verificar si la contraseña ha expirado (middleware)
-export const checkPasswordExpiration = async (userId: number): Promise<{ expired: boolean; mustChange: boolean }> => {
+export const checkPasswordExpiration = async (userId: string): Promise<{ expired: boolean; mustChange: boolean }> => {
   try {
     const user = await User.findByPk(userId);
     

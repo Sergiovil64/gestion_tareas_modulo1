@@ -8,9 +8,9 @@
   },
   "production": {
     "username": "taskuser",
-    "password": "8mIixBEJA1n3McpeDf31P9DxuYx3qwqT",
-    "database": "gestortareas",
-    "host": "dpg-cvf2to5ds78s73fgb9t0-a.oregon-postgres.render.com",
+    "password": "SPhAgh69aCBYBi9dzNV4mjlPfOq6ZFIq",
+    "database": "gestortareas_33s1",
+    "host": "dpg-d45ueca4d50c73c95tdg-a.oregon-postgres.render.com",
     "dialect": "postgres",
     "dialectOptions": {
       "ssl": {

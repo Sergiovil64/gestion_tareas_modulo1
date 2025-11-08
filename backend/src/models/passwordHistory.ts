@@ -2,20 +2,20 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "./index";
 
 class PasswordHistory extends Model {
-  public id!: number;
-  public userId!: number;
+  public id!: string;
+  public userId!: string;
   public passwordHash!: string;
   public changedAt!: Date;
 }
 
 PasswordHistory.init({
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
   userId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     references: {
       model: 'Users',

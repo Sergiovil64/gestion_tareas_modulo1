@@ -9,12 +9,12 @@ export enum TaskStatus {
 }
 
 class Task extends Model {
-  public id!: number;
+  public id!: string;
   public title!: string;
   public description!: string;
   public status!: TaskStatus;
   public dueDate!: Date;
-  public userId!: number;
+  public userId!: string;
   public color!: string; // Premium feature
   public imageUrl!: string; // Premium feature
   public priority!: number;
@@ -22,8 +22,8 @@ class Task extends Model {
 
 Task.init({
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
   title: {
@@ -61,7 +61,7 @@ Task.init({
     allowNull: false
   },
   userId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     // Control de entrada: Validación de entradas en DB
     references: {

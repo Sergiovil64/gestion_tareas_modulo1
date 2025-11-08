@@ -71,18 +71,18 @@ export const getTask = async (req: AuthRequest, res: Response): Promise<void> =>
     const { id } = req.params;
 
     // Validate ID
-    if (!id || isNaN(parseInt(id))) {
+    if (!id) {
       res.status(400).json({ 
         error: "ID inválido",
-        message: "El ID de la tarea debe ser un número válido" 
+        message: "El ID de la tarea es requerido" 
       });
       return;
     }
 
     const task = await Task.findOne({
       where: { 
-        id: parseInt(id),
-        userId: req.userId // Ensure user can only access their own tasks
+        id: id,
+        userId: req.userId
       }
     });
 
@@ -145,17 +145,17 @@ export const updateTask = async (req: AuthRequest, res: Response): Promise<void>
     const { status, title, description, dueDate, priority, color, imageUrl } = req.body;
 
     // Validate ID
-    if (!id || isNaN(parseInt(id))) {
+    if (!id) {
       res.status(400).json({ 
         error: "ID inválido",
-        message: "El ID de la tarea debe ser un número válido" 
+        message: "El ID de la tarea es requerido" 
       });
       return;
     }
 
     const task = await Task.findOne({
       where: { 
-        id: parseInt(id),
+        id: id,
         userId: req.userId // Ensure user can only update their own tasks
       }
     });
@@ -226,17 +226,17 @@ export const deleteTask = async (req: AuthRequest, res: Response): Promise<void>
     const { id } = req.params;
 
     // Validate ID
-    if (!id || isNaN(parseInt(id))) {
+    if (!id) {
       res.status(400).json({ 
         error: "ID inválido",
-        message: "El ID de la tarea debe ser un número válido" 
+        message: "El ID de la tarea es requerido" 
       });
       return;
     }
 
     const task = await Task.findOne({
       where: { 
-        id: parseInt(id),
+        id: id,
         userId: req.userId // Ensure user can only delete their own tasks
       }
     });

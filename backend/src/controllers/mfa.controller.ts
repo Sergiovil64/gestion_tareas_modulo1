@@ -148,7 +148,7 @@ export const verifyAndEnableMFA = async (req: AuthRequest, res: Response): Promi
 };
 
 // Verificar código MFA durante login
-export const verifyMFALogin = async (userId: number, token: string): Promise<boolean> => {
+export const verifyMFALogin = async (userId: string, token: string): Promise<boolean> => {
   try {
     const user = await User.findByPk(userId);
     

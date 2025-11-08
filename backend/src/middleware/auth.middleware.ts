@@ -4,12 +4,12 @@ import rateLimit from "express-rate-limit";
 import User, { UserRole } from "../models/user";
 
 export interface AuthRequest extends Request {
-  userId?: number;
+  userId?: string;
   userRole?: UserRole;
 }
 
 // Generación de token JWT
-export const generateToken = (userData: { id: number, role: UserRole }): string => {
+export const generateToken = (userData: { id: string, role: UserRole }): string => {
   const secretKey: string = process.env.SECRET_KEY || "secret_key";
   const expiresIn: number = parseInt(process.env.EXPIRES_IN || "3600", 10);
   return jwt.sign(userData, secretKey, { expiresIn });
@@ -45,7 +45,7 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
       token, 
       // Control de entrada: Validación de entradas en DB
       process.env.SECRET_KEY as string || 'secret_key'
-    ) as { id: number, role: UserRole };
+    ) as { id: string, role: UserRole };
     
     req.userId = decoded.id;
     req.userRole = decoded.role;

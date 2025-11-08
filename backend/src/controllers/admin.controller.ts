@@ -40,7 +40,7 @@ export const updateUserRole = async (req: AuthRequest, res: Response): Promise<v
     const { userId } = req.params;
     const { role } = req.body;
 
-    if (!userId || isNaN(parseInt(userId))) {
+    if (!userId) {
       res.status(400).json({ 
         error: "ID de usuario inválido" 
       });
@@ -55,7 +55,7 @@ export const updateUserRole = async (req: AuthRequest, res: Response): Promise<v
       return;
     }
 
-    const user = await User.findByPk(parseInt(userId));
+    const user = await User.findByPk(userId);
     
     if (!user) {
       res.status(404).json({ 
@@ -92,14 +92,14 @@ export const toggleUserStatus = async (req: AuthRequest, res: Response): Promise
   try {
     const { userId } = req.params;
 
-    if (!userId || isNaN(parseInt(userId))) {
+    if (!userId) {
       res.status(400).json({ 
         error: "ID de usuario inválido" 
       });
       return;
     }
 
-    const user = await User.findByPk(parseInt(userId));
+    const user = await User.findByPk(userId);
     
     if (!user) {
       res.status(404).json({ 
