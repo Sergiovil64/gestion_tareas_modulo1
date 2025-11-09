@@ -269,8 +269,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     // Inicio de sesión exitoso - reiniciar intentos
     await user.update({ loginAttempts: 0, lastLoginAttempt: null });
 
-    // MFA es obligatorio - verificar si el usuario ha completado la configuración
-    if (!user.mfaEnabled) {
+    // Verificar si el usuario debe completar la configuración de MFA
+    // (tiene mfaSecret del registro pero no lo ha activado aún)
+    if (!user.mfaEnabled && user.mfaSecret) {
       res.status(403).json({
         error: "MFA no configurado",
         message: "Debe completar la configuración de MFA antes de iniciar sesión. Use el endpoint POST /api/auth/verify-mfa-setup con su email y el código de verificación.",
@@ -279,7 +280,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Verificar si el usuario tiene MFA habilitado (ahora es obligatorio)
+    // Verificar si el usuario tiene MFA habilitado
     if (user.mfaEnabled) {
       // Si no se proporcionó token MFA, solicitar
       if (!mfaToken) {
