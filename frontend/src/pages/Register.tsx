@@ -31,9 +31,21 @@ const Register = () => {
 
     try {
       const result = await register(name, email, password);
-      setToken(result.token);
-      setUser(result.user);
-      navigate("/tasks");
+      
+      if (result.mfaRequired && result.mfaSetup) {
+        navigate("/mfa-setup", {
+          state: {
+            email: email,
+            qrCode: result.mfaSetup.qrCode,
+            secret: result.mfaSetup.secret,
+            backupCodes: result.mfaSetup.backupCodes
+          }
+        });
+      } else if (result.token) {
+        setToken(result.token);
+        setUser(result.user);
+        navigate("/tasks");
+      }
     } catch (error: any) {
       const message = error.response?.data?.message || error.response?.data?.errors?.[0]?.message || "Error en registro. La contraseña debe tener al menos 12 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales.";
       setError(message);

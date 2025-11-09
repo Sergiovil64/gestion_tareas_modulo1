@@ -29,3 +29,8 @@ export const upgradeToPremium = async (token: string) => {
   });
   return response.data;
 };
+
+export const verifyMFASetup = async (email: string, token: string) => {
+  const response = await axios.post(`${API_URL}/verify-mfa-setup`, { email, token });
+  return response.data;
+};

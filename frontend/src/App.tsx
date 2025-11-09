@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import MFASetupRegister from "./pages/MFASetupRegister";
 import Tasks from "./pages/Tasks";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
@@ -31,6 +32,7 @@ function App() {
         <Route path="/" element={<Navigate to={token ? "/tasks" : "/login"} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/mfa-setup" element={<MFASetupRegister />} />
         <Route
           path="/tasks"
           element={
