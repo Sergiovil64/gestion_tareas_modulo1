@@ -71,7 +71,7 @@ export const taskValidationRules = [
     .withMessage("El color debe ser un código hexadecimal válido"),
   
   body("imageUrl")
-    .optional()
+    .optional({ checkFalsy: true })
     .trim()
     .isURL().withMessage("Debe proporcionar una URL válida para la imagen")
 ];
@@ -109,7 +109,7 @@ export const taskUpdateValidationRules = [
     .withMessage("El color debe ser un código hexadecimal válido"),
   
   body("imageUrl")
-    .optional()
+    .optional({ checkFalsy: true })
     .trim()
     .isURL().withMessage("Debe proporcionar una URL válida para la imagen")
 ];

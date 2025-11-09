@@ -77,9 +77,13 @@ Task.init({
     defaultValue: '#FFFFFF',
     validate: {
       // Control de entrada: Validación de entradas en DB
-      is: {
-        args: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
-        msg: 'El color debe ser un código hexadecimal válido (ej: #FFFFFF)'
+      isValidColor(value: string) {
+        if (value && value.trim() !== '') {
+          const colorPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+          if (!colorPattern.test(value)) {
+            throw new Error('El color debe ser un código hexadecimal válido (ej: #FFFFFF)');
+          }
+        }
       }
     }
   },
@@ -88,7 +92,16 @@ Task.init({
     allowNull: true,
     validate: {
       // Control de entrada: Validación de entradas en DB
-      isUrl: { msg: 'Debe proporcionar una URL válida para la imagen' }
+      // Solo validar si tiene valor (permitir null y string vacío)
+      isValidUrl(value: string) {
+        if (value && value.trim() !== '') {
+          // Validar solo si tiene contenido
+          const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+          if (!urlPattern.test(value)) {
+            throw new Error('Debe proporcionar una URL válida para la imagen');
+          }
+        }
+      }
     }
   },
   priority: {
